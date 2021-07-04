@@ -1,0 +1,7 @@
+- name: "Install the 'tarsnap' application package"
+  community.general.pacman:
+    name: tarsnap
+    state: present
+  become: true
+  become_user: root
+

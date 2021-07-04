@@ -1,0 +1,4 @@
+- name: "Install and configure cron daemon dependency"
+  ansible.builtin.include_role:
+    name: ext/ans_role_config_cron
+

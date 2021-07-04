@@ -1,0 +1,7 @@
+- name: "Install Tarsnap application"
+  ansible.builtin.include_tasks: install_app/main.yml
+
+- name: "Configure automatic backups"
+  ansible.builtin.include_tasks: config_auto_backups/main.yml
+  when: enable_automatic_backups
+
