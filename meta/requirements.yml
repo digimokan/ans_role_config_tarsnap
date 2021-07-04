@@ -1,3 +1,2 @@
-roles:
-  - src: https://github.com/digimokan/ans_role_config_cron
+- src: https://github.com/digimokan/ans_role_config_cron
 
