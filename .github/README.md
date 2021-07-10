@@ -23,7 +23,11 @@ Install the Tarsnap backup program, and configure backups.
 
 ## Requirements
 
-* To-Do: document manual setup steps here..................................................
+* An account created on tarsnap.com, for `tarsnap_user_id`.
+* The role will prompt for the tarsnap.com account password, when doing the
+  one-time action of creating the local machine key.
+* After the role executes, ensure the created local machine key, at
+  `/root/tarsnap.key`, is backed up to a USB stick and printed paper copy.
 
 ## Supported Operating Systems
 
@@ -60,6 +64,8 @@ Install the Tarsnap backup program, and configure backups.
            name: ans_role_config_tarsnap
          vars:
            user_name: "user2"
+           tarsnap_user_id: "somebody@gmail.com"
+           tarsnap_machine_label: "user2_dell_desktop"
    ```
 
 ## Role Options
@@ -70,7 +76,9 @@ See the role `defaults` file, for overridable vars:
 
 Define these _required_ vars for the role:
 
-  * `user_name`: the user to configure Tarsnap backups for
+  * `user_name`: login account name, on the host machine
+  * `tarsnap_user_id`: email address (tarsnap.com account id), can associate to multiple machines
+  * `tarsnap_machine_label`: label for this machine, associated with machine key
 
 ## Contributing
 
