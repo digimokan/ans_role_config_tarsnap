@@ -5,7 +5,7 @@
 
 - name: "Get tarsnap.com user '{{ tarsnap_user_id }}' password, via shell prompt"
   ansible.builtin.pause:
-    prompt: |
+    prompt: |-
       Creating tarsnap local-machine key at '{{ default_machine_key_path }}'.
       The tarsnap program will upload the public key component to tarsnap.com.
       Back up this keyfile to a USB stick and paper copy!!
