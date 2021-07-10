@@ -26,8 +26,10 @@ Install the Tarsnap backup program, and configure backups.
 * An account created on tarsnap.com, for `tarsnap_user_id`.
 * The role will prompt for the tarsnap.com account password, when doing the
   one-time action of creating the local machine key.
-* After the role executes, ensure the created local machine key, at
-  `/root/tarsnap.key`, is backed up to a USB stick and printed paper copy.
+* After the role executes, ensure the created local machine key is backed up to
+  a USB stick and printed paper copy.
+* See [`defaults/main.yml`](../defaults/main.yml) for local machine key file
+  path.
 
 ## Supported Operating Systems
 
