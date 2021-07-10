@@ -17,6 +17,7 @@
 - name: "Create new local-machine key at '{{ default_machine_key_path }}'"
   ansible.builtin.command:
     cmd: tarsnap-keygen
+           --keyfile {{ default_machine_key_path | quote }}
            --user {{ tarsnap_user_id | quote }}
            --machine {{ tarsnap_machine_label | quote }}
     stdin: "{{ tarsnap_user_password.user_input }}"
