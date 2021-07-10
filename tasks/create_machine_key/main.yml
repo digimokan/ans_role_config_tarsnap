@@ -1,0 +1,24 @@
+- name: "Check if '{{ default_machine_key_path }}' exists (i.e. machine key already created)"
+  ansible.builtin.stat:
+    path: "{{ default_machine_key_path }}"
+  register: machine_key_file
+
+- name: "Get tarsnap.com user '{{ tarsnap_user_id }}' password, via shell prompt"
+  ansible.builtin.pause:
+    prompt: |
+      Creating tarsnap local-machine key at '{{ default_machine_key_path }}'.
+      The tarsnap program will upload the public key component to tarsnap.com.
+      Back up this keyfile to a USB stick and paper copy!!
+      Enter the tarsnap.com password for tarsnap-user '{{ user_name }}'
+    echo: yes
+  register: tarsnap_user_password
+  when: not machine_key_file.stat.exists
+
+- name: "Create new local-machine key at '{{ default_machine_key_path }}'"
+  ansible.builtin.command:
+    cmd: tarsnap-keygen
+           --user {{ tarsnap_user_id | quote }}
+           --machine {{ tarsnap_machine_label | quote }}
+    stdin: "{{ tarsnap_user_password.user_input }}"
+  when: not machine_key_file.stat.exists
+

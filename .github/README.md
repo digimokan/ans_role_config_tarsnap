@@ -78,7 +78,7 @@ Define these _required_ vars for the role:
 
   * `user_name`: login account name, on the host machine
   * `tarsnap_user_id`: email address (tarsnap.com account id), can associate to multiple machines
-  * `tarsnap_machine_label`: label for this machine, associated with machine key
+  * `tarsnap_machine_label`: label for this machine, associated with machine key (an alphanumeric string)
 
 ## Contributing
 
