@@ -1,0 +1,233 @@
+#!/bin/sh
+# vim: set filetype=sh:
+
+################################################################################
+# purpose:   do tarsnap backups, restores, and query info
+# args/opts: see usage (run with -h option)
+# meta:      script installed by ansible {{ role_name }}
+################################################################################
+
+# GLOBAL VARS:
+
+# User Selection Options
+list_all_archives='false'
+show_all_archives='false'
+show_single_archive='false'
+do_auto_backup='false'
+do_manual_backup='false'
+restore_archive='false'
+delete_archive='false'
+archive_name=''
+backup_paths=''
+dry_run='false'
+keyfile_path=''
+
+print_usage() {
+  echo 'USAGE:'
+  echo "  $(basename "${0}")        -h"
+  echo "  sudo  $(basename "${0}")  -l  [-k <keyfile_path>]"
+  echo "  sudo  $(basename "${0}")  -s  [-k <keyfile_path>]"
+  echo "  sudo  $(basename "${0}")  -S  -a <archive_name>  [-k <keyfile_path>]"
+  echo "  sudo  $(basename "${0}")  -t  [-n]  [-k <keyfile_path>]"
+  echo "  sudo  $(basename "${0}")  -b  [-n]  -p <backup_paths>  [-k <keyfile_path>]"
+  echo "  sudo  $(basename "${0}")  -x  [-n]  -a <archive_name>  [-k <keyfile_path>]"
+  echo "  sudo  $(basename "${0}")  -d  [-n]  -a <archive_name>  [-k <keyfile_path>]"
+  echo 'OPTIONS:'
+  echo '  -h, --help'
+  echo '      print this help message'
+  echo '  -l, --list-all-machine-archives'
+  echo '      list all archive names created by this local machine'
+  echo '  -s, --show-stats-all-machine-archives'
+  echo '      show stats for all archives created by this local machine'
+  echo '  -S  --show-stats-single-archive'
+  echo '      show stats for a single specified archive'
+  echo '  -t, --do-auto-backup'
+  echo '      back up dirs listed in XXXXXXXXXXXXXXXXXXXXX to an archive on tarsnap.com'
+  echo '  -b, --do-manual-backup'
+  echo '      back up specified dirs to an archive on tarsnap.com'
+  echo '  -x  --fetch-and-extract-archive'
+  echo '      fetch specified archive from tarsnap.com and extract to working dir'
+  echo '  -d  --delete-archive'
+  echo '      delete specified archive from tarsnap.com'
+  echo '  -a <archive_name>, --archive-name=<archive_name>'
+  echo '      specified archive name'
+  echo '  -p <backup_paths>, --backup-paths=<backup_paths>'
+  echo "      comma-separated list of dirs (absolute paths, no trailing '/')"
+  echo '  -n  --dry-run'
+  echo "      do a 'dry-run' of the selected backup, extract, or delete operation"
+  echo '  -k <keyfile_path>, --keyfile-path=<keyfile_path>'
+  echo "      specify local machine keyfile path (default '{{ default_machine_key_path }}')"
+  echo 'EXIT CODES:'
+  echo '    0  ok'
+  echo '    1  usage, arguments, or options error'
+  echo '    5  tarsnap operation error'
+  echo '  255  unknown error'
+  exit "${1}"
+}
+
+get_cmd_opts() {
+  while getopts ':hl-:' option; do
+    case "${option}" in
+      h)  handle_help ;;
+      l)  handle_list_all_machine_archives ;;
+      -)  LONG_OPTARG="${OPTARG#*=}"
+          case ${OPTARG} in
+            help)                        handle_help ;;
+            help=*)                      handle_illegal_option_arg "${OPTARG}" ;;
+            list-all-machine-archives)   handle_list_all_machine_archives ;;
+            list-all-machine-archives=*) handle_illegal_option_arg "${OPTARG}" ;;
+            '')                          break ;; # non-option arg starting with '-'
+            *)                           handle_unknown_option "${OPTARG}" ;;
+          esac ;;
+      \?) handle_unknown_option "${OPTARG}" ;;
+    esac
+  done
+}
+
+handle_help() {
+  print_usage 0
+}
+
+handle_list_all_machine_archives() {
+  if [ "${show_all_archives}" = 'true' ] || \
+     [ "${show_single_archive}" = 'true' ] || \
+     [ "${do_auto_backup}" = 'true' ] || \
+     [ "${do_manual_backup}" = 'true' ] || \
+     [ "${restore_archive}" = 'true' ] || \
+     [ "${delete_archive}" = 'true' ]; then
+    quit_err_msg_with_help "Mutually exclusive options selected" 1
+  fi
+  list_all_archives='true'
+}
+
+# handle_backup_file_extension() {
+#   backup_ext="${1}"
+# }
+
+# handle_merge_conflict_file() {
+#   if [ "${rename_pacnew_as_merged}" = 'true' ]; then
+#     quit_err_msg_with_help "Mutually exclusive options selected" 1
+#   fi
+#   merge_conflict_file='true'
+# }
+
+# handle_rename_pacnew_as_merged() {
+#   if [ "${backup_conflict_file}" = 'true' ] || [ "${merge_conflict_file}" = 'true' ]; then
+#     quit_err_msg_with_help "Mutually exclusive options selected" 1
+#   fi
+#   rename_pacnew_as_merged='true'
+# }
+
+# handle_merged_file_extension() {
+#   merged_ext="${1}"
+# }
+
+# handle_list_pacnew_files() {
+#   list_pacnew_files='true'
+# }
+
+handle_unknown_option() {
+  err_msg="unknown option \"${1}\""
+  quit_err_msg_with_help "${err_msg}" 1
+}
+
+handle_illegal_option_arg() {
+  err_msg="illegal argument in \"${1}\""
+  quit_err_msg_with_help "${err_msg}" 1
+}
+
+handle_missing_option_arg() {
+  err_msg="missing argument for option \"${1}\""
+  quit_err_msg_with_help "${err_msg}" 1
+}
+
+print_err_msg() {
+  echo 'ERROR:'
+  printf "$(basename "${0}"): %s\\n\\n" "${1}"
+}
+
+quit_err_msg() {
+  print_err_msg "${1}"
+  exit "${2}"
+}
+
+quit_err_msg_with_help() {
+  print_err_msg "${1}"
+  print_usage "${2}"
+}
+
+# check_args_and_opts() {
+#   if [ "${conflict_file_path}" = '' ]; then
+#     if [ "${backup_conflict_file}" = 'true' ] || \
+#        [ "${merge_conflict_file}" = 'true' ] || \
+#        [ "${rename_pacnew_as_merged}" = 'true' ]; then
+#       quit_err_msg_with_help "missing <file_path> argument" 1
+#     fi
+#   else
+#     conflict_file_ext="${conflict_file_path##*.}"
+#     if [ "${conflict_file_ext}" = 'pacnew' ]; then
+#       quit_err_msg_with_help "Don't specify '<file_path>.pacnew'. Just specify '<file_path>'." 1
+#     fi
+#   fi
+# }
+
+do_list_all_machine_archives() {
+  echo "Listing all local machine archives with 'tarsnap --list-archives -v'..."
+  tarsnap ${keyfile_path:+--keyfile "$keyfile_path"} --list-archives -v
+  exit_code="${?}"
+  if [ "${exit_code}" != 0 ]; then
+    quit_err_msg "tarsnap error attempting to list all archives" 5
+  fi
+}
+
+# do_merge_conflict_file() {
+#   pacnew_file_path="${conflict_file_path}.pacnew"
+#   echo "Editing '${conflict_file_path}' and merging in '${pacnew_file_path}'..."
+#   if [ ! -f "${conflict_file_path}" ]; then
+#     quit_err_msg "${conflict_file_path} does not exist" 5
+#   fi
+#   if [ ! -f "${pacnew_file_path}" ]; then
+#     quit_err_msg "${pacnew_file_path} does not exist" 5
+#   fi
+#   vimdiff "${conflict_file_path}" "${pacnew_file_path}"
+#   exit_code="${?}"
+#   if [ "${exit_code}" != 0 ]; then
+#     quit_err_msg "failure trying to use vimdiff executable" 10
+#   fi
+# }
+
+# do_rename_pacnew_as_merged() {
+#   pacnew_file_path="${conflict_file_path}.pacnew"
+#   merged_file_path="${pacnew_file_path}${merged_ext}"
+#   echo "Renaming '${pacnew_file_path}' to '${merged_file_path}'..."
+#   if [ ! -f "${pacnew_file_path}" ]; then
+#     quit_err_msg "${pacnew_file_path} does not exist" 5
+#   fi
+#   mv "${pacnew_file_path}" "${merged_file_path}"
+#   exit_code="${?}"
+#   if [ "${exit_code}" != 0 ]; then
+#     quit_err_msg "file path error while renaming merged file" 5
+#   fi
+# }
+
+# do_list_pacnew_files() {
+#   echo "Searching for pacnew files with 'find'..."
+#   eval "${pacnew_search_cmd}"
+#   exit_code="${?}"
+#   if [ "${exit_code}" = 0 ]; then
+#     exit 0
+#   else
+#     quit_err_msg "failure searching for pacnew files" 10
+#   fi
+# }
+
+main() {
+  get_cmd_opts "$@"
+  if [ "${list_all_archives}" = 'true' ]; then
+    do_list_all_machine_archives "$@"
+  fi
+  exit 0
+}
+
+main "$@"
+
