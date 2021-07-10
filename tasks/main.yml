@@ -1,7 +1,10 @@
 - name: "Install Tarsnap application"
   ansible.builtin.include_tasks: install_app/main.yml
 
-- name: "Create new local machine key for tarsnap user {{ tarsnap_user_id }}, as required"
+- name: "Configure default Tarsnap application settings"
+  ansible.builtin.include_tasks: config_app_settings/main.yml
+
+- name: "Create new local machine key for Tarsnap user '{{ tarsnap_user_id }}', as required"
   ansible.builtin.include_tasks: create_machine_key/main.yml
 
 - name: "Configure automatic backups"

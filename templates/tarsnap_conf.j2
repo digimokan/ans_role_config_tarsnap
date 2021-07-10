@@ -1,0 +1,22 @@
+# vim: set filetype=conf:
+# ANSIBLE-MANAGED CONFIGURATION FILE
+# defaults taken from /etc/tarsnap/tarsnap.conf.sample
+
+# Tarsnap cache directory
+cachedir /usr/local/tarsnap-cache
+
+# Tarsnap local-machine key file path
+keyfile {{ default_machine_key_path }}
+
+# don't archive files which have the nodump flag set
+nodump
+
+# print statistics when creating or deleting archives
+print-stats
+
+# create a checkpoint once per GB of uploaded data
+checkpoint-bytes 1G
+
+# use SI prefixes, to make numbers printed by --print-stats more readable
+humanize-numbers
+
