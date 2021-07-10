@@ -27,12 +27,12 @@
   become_user: root
   when: not machine_key_file.stat.exists
 
-# - name: "Set file permissions for local-machine key at '{{ default_machine_key_path }}'"
-#   ansible.builtin.file:
-#     path: "{{ default_machine_key_path }}"
-#     owner: root
-#     group: root
-#     mode: '644'
-#   become: true
-#   become_user: root
+- name: "Set file permissions for local-machine key at '{{ default_machine_key_path }}'"
+  ansible.builtin.file:
+    path: "{{ default_machine_key_path }}"
+    owner: root
+    group: root
+    mode: '644'
+  become: true
+  become_user: root
 
