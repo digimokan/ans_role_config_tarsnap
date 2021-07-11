@@ -4,7 +4,7 @@
 ################################################################################
 # purpose:   do tarsnap backups, restores, and query info
 # args/opts: see usage (run with -h option)
-# meta:      script installed by ansible {{ role_name }}
+# meta:      script installed by ansible {{ role_name | basename }}
 ################################################################################
 
 # GLOBAL VARS:
@@ -35,14 +35,14 @@ print_usage() {
   echo 'OPTIONS:'
   echo '  -h, --help'
   echo '      print this help message'
-  echo '  -l, --list-all-machine-archives'
-  echo '      list all archive names created by this local machine'
-  echo '  -s, --show-stats-all-machine-archives'
-  echo '      show stats for all archives created by this local machine'
-  echo '  -S, --show-stats-single-archive'
-  echo '      show stats for a single specified archive'
+  echo '  -l, --list-all-archives'
+  echo '      list all created archives'
+  echo '  -s, --show-details-all-archives'
+  echo '      show details for all created archives'
+  echo '  -S, --show-details-single-archive'
+  echo '      show details for a single created archive'
   echo '  -b, --do-manual-backup'
-  echo '      back up specified dirs to an archive on tarsnap.com'
+  echo '      back up specified backup paths to an archive on tarsnap.com'
   echo '  -t, --do-auto-backup'
   echo '      do auto/periodic backup of dirs listed in XXXXXXXXXXXXXXXXXXXXX to an archive'
   echo '  -x, --fetch-and-extract-archive'
@@ -55,8 +55,8 @@ print_usage() {
   echo "      comma-separated list of dirs (absolute paths, no trailing '/')"
   echo '  -n, --dry-run'
   echo "      do a 'dry-run' of the selected backup, extract, or delete operation"
-  echo '  -k <keyfile_path>, --keyfile-path=<keyfile_path>'
-  echo "      specify local machine keyfile path (default '{{ default_machine_key_path }}')"
+  echo '  -k <keyfile_path>, --machine-keyfile-path=<keyfile_path>'
+  echo "      specify machine keyfile path (default: local machine '{{ default_machine_key_path }}')"
   echo 'EXIT CODES:'
   echo '    0  ok'
   echo '    1  usage, arguments, or options error'
@@ -69,16 +69,16 @@ get_cmd_opts() {
   while getopts ':hlk:-:' option; do
     case "${option}" in
       h)  handle_help ;;
-      l)  handle_list_all_machine_archives ;;
-      k)  handle_keyfile_path "${OPTARG}" ;;
+      l)  handle_list_all_archives ;;
+      k)  handle_machine_keyfile_path "${OPTARG}" ;;
       -)  LONG_OPTARG="${OPTARG#*=}"
           case ${OPTARG} in
             help)                        handle_help ;;
             help=*)                      handle_illegal_option_arg "${OPTARG}" ;;
-            list-all-machine-archives)   handle_list_all_machine_archives ;;
-            list-all-machine-archives=*) handle_illegal_option_arg "${OPTARG}" ;;
-            keyfile-path=?*)             handle_keyfile_path "${LONG_OPTARG}" ;;
-            keyfile-path*)               handle_missing_option_arg "${OPTARG}" ;;
+            list-all-archives)           handle_list_all_archives ;;
+            list-all-archives=*)         handle_illegal_option_arg "${OPTARG}" ;;
+            machine-keyfile-path=?*)     handle_machine_keyfile_path "${LONG_OPTARG}" ;;
+            machine-keyfile-path*)       handle_missing_option_arg "${OPTARG}" ;;
             '')                          break ;; # non-option arg starting with '-'
             *)                           handle_unknown_option "${OPTARG}" ;;
           esac ;;
@@ -91,7 +91,7 @@ handle_help() {
   print_usage 0
 }
 
-handle_list_all_machine_archives() {
+handle_list_all_archives() {
   if [ "${show_all_archives}" = 'true' ] || \
      [ "${show_single_archive}" = 'true' ] || \
      [ "${do_auto_backup}" = 'true' ] || \
@@ -103,7 +103,7 @@ handle_list_all_machine_archives() {
   list_all_archives='true'
 }
 
-handle_keyfile_path() {
+handle_machine_keyfile_path() {
   keyfile_path="${1}"
   if [ ! -f "${keyfile_path}" ]; then
     quit_err_msg_with_help "Specified keyfile ${keyfile_path} does not exist" 1
