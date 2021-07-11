@@ -24,14 +24,14 @@ keyfile_path=''
 
 print_usage() {
   echo 'USAGE:'
-  echo "  $(basename "${0}")        -h"
-  echo "  sudo  $(basename "${0}")  -l  [-k <keyfile_path>]"
-  echo "  sudo  $(basename "${0}")  -s  [-k <keyfile_path>]"
-  echo "  sudo  $(basename "${0}")  -S  -a <archive_name>  [-k <keyfile_path>]"
-  echo "  sudo  $(basename "${0}")  -t  [-n]  [-k <keyfile_path>]"
-  echo "  sudo  $(basename "${0}")  -b  [-n]  -p <backup_paths>  [-k <keyfile_path>]"
-  echo "  sudo  $(basename "${0}")  -x  [-n]  -a <archive_name>  [-k <keyfile_path>]"
-  echo "  sudo  $(basename "${0}")  -d  [-n]  -a <archive_name>  [-k <keyfile_path>]"
+  echo "  $(basename "${0}")  -h"
+  echo "  $(basename "${0}")  -l  [-k <keyfile_path>]"
+  echo "  $(basename "${0}")  -s  [-k <keyfile_path>]"
+  echo "  $(basename "${0}")  -S  [-k <keyfile_path>]  -a <archive_name>"
+  echo "  $(basename "${0}")  -t  [-k <keyfile_path>]  [-n]"
+  echo "  $(basename "${0}")  -b  [-k <keyfile_path>]  [-n]  -p <backup_paths>"
+  echo "  $(basename "${0}")  -x  [-k <keyfile_path>]  [-n]  -a <archive_name>"
+  echo "  $(basename "${0}")  -d  [-k <keyfile_path>]  [-n]  -a <archive_name>"
   echo 'OPTIONS:'
   echo '  -h, --help'
   echo '      print this help message'
@@ -39,21 +39,21 @@ print_usage() {
   echo '      list all archive names created by this local machine'
   echo '  -s, --show-stats-all-machine-archives'
   echo '      show stats for all archives created by this local machine'
-  echo '  -S  --show-stats-single-archive'
+  echo '  -S, --show-stats-single-archive'
   echo '      show stats for a single specified archive'
   echo '  -t, --do-auto-backup'
-  echo '      back up dirs listed in XXXXXXXXXXXXXXXXXXXXX to an archive on tarsnap.com'
+  echo '      do auto/periodic backup of dirs listed in XXXXXXXXXXXXXXXXXXXXX to an archive'
   echo '  -b, --do-manual-backup'
   echo '      back up specified dirs to an archive on tarsnap.com'
-  echo '  -x  --fetch-and-extract-archive'
+  echo '  -x, --fetch-and-extract-archive'
   echo '      fetch specified archive from tarsnap.com and extract to working dir'
-  echo '  -d  --delete-archive'
+  echo '  -d, --delete-archive'
   echo '      delete specified archive from tarsnap.com'
   echo '  -a <archive_name>, --archive-name=<archive_name>'
   echo '      specified archive name'
   echo '  -p <backup_paths>, --backup-paths=<backup_paths>'
   echo "      comma-separated list of dirs (absolute paths, no trailing '/')"
-  echo '  -n  --dry-run'
+  echo '  -n, --dry-run'
   echo "      do a 'dry-run' of the selected backup, extract, or delete operation"
   echo '  -k <keyfile_path>, --keyfile-path=<keyfile_path>'
   echo "      specify local machine keyfile path (default '{{ default_machine_key_path }}')"
