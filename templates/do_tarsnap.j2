@@ -77,8 +77,8 @@ get_cmd_opts() {
             help=*)                      handle_illegal_option_arg "${OPTARG}" ;;
             list-all-machine-archives)   handle_list_all_machine_archives ;;
             list-all-machine-archives=*) handle_illegal_option_arg "${OPTARG}" ;;
-            keyfile-path)                handle_keyfile_path "${LONG_OPTARG}" ;;
-            keyfile-path=*)              handle_missing_option_arg "${OPTARG}" ;;
+            keyfile-path=?*)             handle_keyfile_path "${LONG_OPTARG}" ;;
+            keyfile-path*)               handle_missing_option_arg "${OPTARG}" ;;
             '')                          break ;; # non-option arg starting with '-'
             *)                           handle_unknown_option "${OPTARG}" ;;
           esac ;;
