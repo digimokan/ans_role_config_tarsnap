@@ -27,11 +27,11 @@ print_usage() {
   echo "  $(basename "${0}")  -h"
   echo "  $(basename "${0}")  -l  [-k <keyfile_path>]"
   echo "  $(basename "${0}")  -s  [-k <keyfile_path>]"
-  echo "  $(basename "${0}")  -S  [-k <keyfile_path>]  -a <archive_name>"
-  echo "  $(basename "${0}")  -t  [-k <keyfile_path>]  [-n]"
-  echo "  $(basename "${0}")  -b  [-k <keyfile_path>]  [-n]  -p <backup_paths>"
-  echo "  $(basename "${0}")  -x  [-k <keyfile_path>]  [-n]  -a <archive_name>"
-  echo "  $(basename "${0}")  -d  [-k <keyfile_path>]  [-n]  -a <archive_name>"
+  echo "  $(basename "${0}")  -S  -a <archive_name>  [-k <keyfile_path>]"
+  echo "  $(basename "${0}")  -b  -p <backup_paths>  [-n]  [-k <keyfile_path>]"
+  echo "  $(basename "${0}")  -t"
+  echo "  $(basename "${0}")  -x  -a <archive_name>  [-n]  [-k <keyfile_path>]"
+  echo "  $(basename "${0}")  -d  -a <archive_name>  [-n]  [-k <keyfile_path>]"
   echo 'OPTIONS:'
   echo '  -h, --help'
   echo '      print this help message'
@@ -41,10 +41,10 @@ print_usage() {
   echo '      show stats for all archives created by this local machine'
   echo '  -S, --show-stats-single-archive'
   echo '      show stats for a single specified archive'
-  echo '  -t, --do-auto-backup'
-  echo '      do auto/periodic backup of dirs listed in XXXXXXXXXXXXXXXXXXXXX to an archive'
   echo '  -b, --do-manual-backup'
   echo '      back up specified dirs to an archive on tarsnap.com'
+  echo '  -t, --do-auto-backup'
+  echo '      do auto/periodic backup of dirs listed in XXXXXXXXXXXXXXXXXXXXX to an archive'
   echo '  -x, --fetch-and-extract-archive'
   echo '      fetch specified archive from tarsnap.com and extract to working dir'
   echo '  -d, --delete-archive'
@@ -66,16 +66,19 @@ print_usage() {
 }
 
 get_cmd_opts() {
-  while getopts ':hl-:' option; do
+  while getopts ':hlk:-:' option; do
     case "${option}" in
       h)  handle_help ;;
       l)  handle_list_all_machine_archives ;;
+      k)  handle_keyfile_path "${OPTARG}" ;;
       -)  LONG_OPTARG="${OPTARG#*=}"
           case ${OPTARG} in
             help)                        handle_help ;;
             help=*)                      handle_illegal_option_arg "${OPTARG}" ;;
             list-all-machine-archives)   handle_list_all_machine_archives ;;
             list-all-machine-archives=*) handle_illegal_option_arg "${OPTARG}" ;;
+            keyfile-path)                handle_keyfile_path "${LONG_OPTARG}" ;;
+            keyfile-path=*)              handle_missing_option_arg "${OPTARG}" ;;
             '')                          break ;; # non-option arg starting with '-'
             *)                           handle_unknown_option "${OPTARG}" ;;
           esac ;;
@@ -100,9 +103,12 @@ handle_list_all_machine_archives() {
   list_all_archives='true'
 }
 
-# handle_backup_file_extension() {
-#   backup_ext="${1}"
-# }
+handle_keyfile_path() {
+  keyfile_path="${1}"
+  if [ ! -f "${keyfile_path}" ]; then
+    quit_err_msg_with_help "Specified keyfile ${keyfile_path} does not exist" 1
+  fi
+}
 
 # handle_merge_conflict_file() {
 #   if [ "${rename_pacnew_as_merged}" = 'true' ]; then
