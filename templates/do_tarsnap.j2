@@ -178,8 +178,13 @@ quit_err_msg_with_help() {
 # }
 
 do_list_all_machine_archives() {
-  echo "Listing all local machine archives with 'tarsnap --list-archives -v'..."
-  tarsnap ${keyfile_path:+--keyfile "$keyfile_path"} --list-archives -v
+  list_archives_cmd="tarsnap ${keyfile_path:+--keyfile "$keyfile_path"} --list-archives -v"
+  echo "Listing all local machine archives with '${list_archives_cmd}'..."
+  # tarsnap ${keyfile_path:+--keyfile "$keyfile_path"} --list-archives -v
+
+
+  eval "${list_archives_cmd}"
+
   exit_code="${?}"
   if [ "${exit_code}" != 0 ]; then
     quit_err_msg "tarsnap error attempting to list all archives" 5
