@@ -19,7 +19,7 @@ restore_archive='false'
 delete_archive='false'
 archive_name=''
 backup_paths=''
-dry_run='false'
+dry_run=''
 keyfile_path=''
 
 print_usage() {
@@ -66,13 +66,14 @@ print_usage() {
 }
 
 get_cmd_opts() {
-  while getopts ':hlba:p:k:-:' option; do
+  while getopts ':hlba:p:nk:-:' option; do
     case "${option}" in
       h)  handle_help ;;
       l)  handle_list_all_archives ;;
       b)  handle_manual_backup ;;
       a)  handle_archive_name "${OPTARG}" ;;
       p)  handle_backup_paths "${OPTARG}" ;;
+      n)  handle_dry_run ;;
       k)  handle_machine_keyfile_path "${OPTARG}" ;;
       -)  LONG_OPTARG="${OPTARG#*=}"
           case ${OPTARG} in
@@ -86,6 +87,8 @@ get_cmd_opts() {
             archive-name*)               handle_missing_option_arg "${OPTARG}" ;;
             backup-paths=?*)             handle_backup_paths "${LONG_OPTARG}" ;;
             backup-paths*)               handle_missing_option_arg "${OPTARG}" ;;
+            dry-run)                     handle_dry_run ;;
+            dry-run=*)                   handle_illegal_option_arg "${OPTARG}" ;;
             machine-keyfile-path=?*)     handle_machine_keyfile_path "${LONG_OPTARG}" ;;
             machine-keyfile-path*)       handle_missing_option_arg "${OPTARG}" ;;
             '')                          break ;; # non-option arg starting with '-'
@@ -131,6 +134,10 @@ handle_archive_name() {
 handle_backup_paths() {
   paths_with_commas="${1}"
   backup_paths=$(echo "${paths_with_commas}" | tr "," " ")
+}
+
+handle_dry_run() {
+  dry_run='--dry-run '
 }
 
 handle_machine_keyfile_path() {
@@ -183,13 +190,13 @@ do_manual_backup() {
     quit_err_msg_with_help "missing 'archive-name' option" 1
   fi
   ts_backup_paths=$(echo "${backup_paths}" | tr "," " ")
-  manual_backup_cmd="tarsnap -cvf ${keyfile_path:+--keyfile "$keyfile_path" }${archive_name} ${ts_backup_paths}"
+  manual_backup_cmd="tarsnap -cvf ${keyfile_path:+--keyfile "$keyfile_path" }${dry_run:-}${archive_name} ${ts_backup_paths}"
   echo "Backing up specified paths to an archive on tarsnap.com with '${manual_backup_cmd}'..."
-  eval "${manual_backup_cmd}"
-  exit_code="${?}"
-  if [ "${exit_code}" != 0 ]; then
-    quit_err_msg_with_help "tarsnap error attempting to do manual backup" 5
-  fi
+  # eval "${manual_backup_cmd}"
+  # exit_code="${?}"
+  # if [ "${exit_code}" != 0 ]; then
+  #   quit_err_msg_with_help "tarsnap error attempting to do manual backup" 5
+  # fi
 }
 
 main() {
