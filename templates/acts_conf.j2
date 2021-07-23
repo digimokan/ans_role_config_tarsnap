@@ -1,0 +1,28 @@
+# vim: set filetype=conf:
+# ANSIBLE-MANAGED CONFIGURATION FILE
+# defaults taken from /etc/acts.conf.sample
+
+# directories to back up to an archive on tarsnap.com, when acts runs
+# NOTE: relative to root dir, no leading or trailing '/'
+# backuptargets="var etc home root"
+# backuptargets='{{ automatic_backup_dirs     | relpath('/')   | join(' ") }}"
+backuptargets="{{ automatic_backup_dirs | map('regex_replace', '^\\/|\\/$', '') | list | join(' ') }}"
+
+# verbosity of acts output (-1 silent, 0 normal, 1 verbose, 2 debug)
+verbose=1
+
+# prefix this string to a created archive
+hostname=$(hostname)
+
+# append UTC (0) timestamp, or local-time (1) timestamp, to a created archive
+uselocaltime=0
+
+# keep this number of daily backup archives (0 to keep infinite number)
+dailybackups=31
+
+# keep this number of monthly backup archives (0 to keep infinite number)
+monthlybackups=12
+
+# keep this number of yearly backup archives (0 to keep infinite number)
+yearlybackups=0
+

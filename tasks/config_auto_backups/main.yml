@@ -9,3 +9,14 @@
   vars:
     package_name: "acts-git"
 
+- name: "Configure 'acts' script settings, and backup paths, in '/etc/acts.conf'"
+  ansible.builtin.template:
+    dest: '/etc/acts.conf'
+    src: "acts_conf.j2"
+    owner: 'root'
+    group: 'root'
+    mode: '644'
+    force: yes
+  become: true
+  become_user: root
+
