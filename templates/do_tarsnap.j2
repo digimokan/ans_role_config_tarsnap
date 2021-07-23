@@ -66,11 +66,12 @@ print_usage() {
 }
 
 get_cmd_opts() {
-  while getopts ':hlbp:k:-:' option; do
+  while getopts ':hlba:p:k:-:' option; do
     case "${option}" in
       h)  handle_help ;;
       l)  handle_list_all_archives ;;
       b)  handle_manual_backup ;;
+      a)  handle_archive_name "${OPTARG}" ;;
       p)  handle_backup_paths "${OPTARG}" ;;
       k)  handle_machine_keyfile_path "${OPTARG}" ;;
       -)  LONG_OPTARG="${OPTARG#*=}"
@@ -81,6 +82,8 @@ get_cmd_opts() {
             list-all-archives=*)         handle_illegal_option_arg "${OPTARG}" ;;
             manual-backup)               handle_manual_backup ;;
             manual-backup=*)             handle_illegal_option_arg "${OPTARG}" ;;
+            archive-name=?*)             handle_archive_name "${LONG_OPTARG}" ;;
+            archive-name*)               handle_missing_option_arg "${OPTARG}" ;;
             backup-paths=?*)             handle_backup_paths "${LONG_OPTARG}" ;;
             backup-paths*)               handle_missing_option_arg "${OPTARG}" ;;
             machine-keyfile-path=?*)     handle_machine_keyfile_path "${LONG_OPTARG}" ;;
@@ -119,6 +122,10 @@ handle_manual_backup() {
     quit_err_msg_with_help "mutually exclusive options selected" 1
   fi
   manual_backup='true'
+}
+
+handle_archive_name() {
+  archive_name="${1}"
 }
 
 handle_backup_paths() {
@@ -172,11 +179,11 @@ do_manual_backup() {
   if [ "${backup_paths}" = '' ]; then
     quit_err_msg_with_help "missing 'backup-paths' option" 1
   fi
-  # if [ "${archive_name}" = '' ]; then
-  #   quit_err_msg_with_help "missing 'archive-name' option" 1
-  # fi
+  if [ "${archive_name}" = '' ]; then
+    quit_err_msg_with_help "missing 'archive-name' option" 1
+  fi
   ts_backup_paths=$(echo "${backup_paths}" | tr "," " ")
-  manual_backup_cmd="tarsnap -cvf ${keyfile_path:+--keyfile "$keyfile_path" }${ts_backup_paths}"
+  manual_backup_cmd="tarsnap -cvf ${keyfile_path:+--keyfile "$keyfile_path" }${archive_name} ${ts_backup_paths}"
   echo "Backing up specified paths to an archive on tarsnap.com with '${manual_backup_cmd}'..."
   # eval "${manual_backup_cmd}"
   # exit_code="${?}"
