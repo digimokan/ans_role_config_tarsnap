@@ -190,7 +190,7 @@ do_manual_backup() {
     quit_err_msg_with_help "missing 'archive-name' option" 1
   fi
   ts_backup_paths=$(echo "${backup_paths}" | tr "," " ")
-  manual_backup_cmd="tarsnap -cvf ${keyfile_path:+--keyfile "$keyfile_path" }${dry_run:-}${archive_name} ${ts_backup_paths}"
+  manual_backup_cmd="tarsnap -cvf ${keyfile_path:+--keyfile "$keyfile_path" }${archive_name} ${dry_run:-}${ts_backup_paths}"
   echo "Backing up specified paths to an archive on tarsnap.com with '${manual_backup_cmd}'..."
   eval "${manual_backup_cmd}"
   exit_code="${?}"
