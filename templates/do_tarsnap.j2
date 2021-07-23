@@ -15,7 +15,7 @@ show_all_archives='false'
 show_single_archive='false'
 auto_backup='false'
 manual_backup='false'
-restore_archive='false'
+extract_archive='false'
 delete_archive='false'
 archive_name=''
 backup_paths=''
@@ -66,13 +66,14 @@ print_usage() {
 }
 
 get_cmd_opts() {
-  while getopts ':hlsSbda:p:nk:-:' option; do
+  while getopts ':hlsSbxda:p:nk:-:' option; do
     case "${option}" in
       h)  handle_help ;;
       l)  handle_list_all_archives ;;
       s)  handle_show_details_all_archives ;;
       S)  handle_show_details_single_archive ;;
       b)  handle_manual_backup ;;
+      x)  handle_fetch_and_extract_archive ;;
       d)  handle_delete_archive ;;
       a)  handle_archive_name "${OPTARG}" ;;
       p)  handle_backup_paths "${OPTARG}" ;;
@@ -90,6 +91,8 @@ get_cmd_opts() {
             show-details-single-archive=*) handle_illegal_option_arg "${OPTARG}" ;;
             manual-backup)                 handle_manual_backup ;;
             manual-backup=*)               handle_illegal_option_arg "${OPTARG}" ;;
+            fetch-and-extract-archive)     handle_fetch_and_extract_archive ;;
+            fetch-and-extract-archive=*)   handle_illegal_option_arg "${OPTARG}" ;;
             delete-archive)                handle_delete_archive ;;
             delete-archive=*)              handle_illegal_option_arg "${OPTARG}" ;;
             archive-name=?*)               handle_archive_name "${LONG_OPTARG}" ;;
@@ -117,7 +120,7 @@ handle_list_all_archives() {
      [ "${show_single_archive}" = 'true' ] || \
      [ "${auto_backup}" = 'true' ] || \
      [ "${manual_backup}" = 'true' ] || \
-     [ "${restore_archive}" = 'true' ] || \
+     [ "${extract_archive}" = 'true' ] || \
      [ "${delete_archive}" = 'true' ]; then
     quit_err_msg_with_help "mutually exclusive options selected" 1
   fi
@@ -129,7 +132,7 @@ handle_show_details_all_archives() {
      [ "${show_single_archive}" = 'true' ] || \
      [ "${auto_backup}" = 'true' ] || \
      [ "${manual_backup}" = 'true' ] || \
-     [ "${restore_archive}" = 'true' ] || \
+     [ "${extract_archive}" = 'true' ] || \
      [ "${delete_archive}" = 'true' ]; then
     quit_err_msg_with_help "mutually exclusive options selected" 1
   fi
@@ -141,7 +144,7 @@ handle_show_details_single_archive() {
      [ "${show_all_archives}" = 'true' ] || \
      [ "${auto_backup}" = 'true' ] || \
      [ "${manual_backup}" = 'true' ] || \
-     [ "${restore_archive}" = 'true' ] || \
+     [ "${extract_archive}" = 'true' ] || \
      [ "${delete_archive}" = 'true' ]; then
     quit_err_msg_with_help "mutually exclusive options selected" 1
   fi
@@ -153,11 +156,23 @@ handle_manual_backup() {
      [ "${show_all_archives}" = 'true' ] || \
      [ "${show_single_archive}" = 'true' ] || \
      [ "${auto_backup}" = 'true' ] || \
-     [ "${restore_archive}" = 'true' ] || \
+     [ "${extract_archive}" = 'true' ] || \
      [ "${delete_archive}" = 'true' ]; then
     quit_err_msg_with_help "mutually exclusive options selected" 1
   fi
   manual_backup='true'
+}
+
+handle_fetch_and_extract_archive() {
+  if [ "${list_all_archives}" = 'true' ] || \
+     [ "${show_all_archives}" = 'true' ] || \
+     [ "${show_single_archive}" = 'true' ] || \
+     [ "${auto_backup}" = 'true' ] || \
+     [ "${manual_backup}" = 'true' ] || \
+     [ "${delete_archive}" = 'true' ]; then
+    quit_err_msg_with_help "mutually exclusive options selected" 1
+  fi
+  extract_archive='true'
 }
 
 handle_delete_archive() {
@@ -166,7 +181,7 @@ handle_delete_archive() {
      [ "${show_single_archive}" = 'true' ] || \
      [ "${auto_backup}" = 'true' ] || \
      [ "${manual_backup}" = 'true' ] || \
-     [ "${restore_archive}" = 'true' ]; then
+     [ "${extract_archive}" = 'true' ]; then
     quit_err_msg_with_help "mutually exclusive options selected" 1
   fi
   delete_archive='true'
@@ -267,6 +282,19 @@ do_manual_backup() {
   fi
 }
 
+do_extract_archive() {
+  if [ "${archive_name}" = '' ]; then
+    quit_err_msg_with_help "missing 'archive-name' option" 1
+  fi
+  extract_archive_cmd="tarsnap -xvf ${keyfile_path:+--keyfile "$keyfile_path" }${archive_name}"
+  echo "Extracting specified archive from tarsnap.com with '${extract_archive_cmd}'..."
+  eval "${extract_archive_cmd}"
+  exit_code="${?}"
+  if [ "${exit_code}" != 0 ]; then
+    quit_err_msg_with_help "tarsnap error attempting to extract archive" 5
+  fi
+}
+
 do_delete_archive() {
   if [ "${archive_name}" = '' ]; then
     quit_err_msg_with_help "missing 'archive-name' option" 1
@@ -290,6 +318,8 @@ main() {
     do_show_details_single_archive "$@"
   elif [ "${manual_backup}" = 'true' ]; then
     do_manual_backup "$@"
+  elif [ "${extract_archive}" = 'true' ]; then
+    do_extract_archive "$@"
   elif [ "${delete_archive}" = 'true' ]; then
     do_delete_archive "$@"
   else
