@@ -6,6 +6,6 @@ enable_automatic_backups: false
 
 # if automatic backups enabled, backup this directory list to Tarsnap
 automatic_backup_dirs:
-  - "/home/user2/Documents/"
-  - "/home/user2/Templates/"
+  - '/home/user2/Documents/'
+  - '/home/user2/Templates/'
 
