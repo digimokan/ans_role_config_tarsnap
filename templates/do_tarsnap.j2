@@ -159,7 +159,7 @@ quit_err_msg_with_help() {
 }
 
 do_list_all_machine_archives() {
-  list_archives_cmd="tarsnap ${keyfile_path:+--keyfile "$keyfile_path"} --list-archives -v"
+  list_archives_cmd="tarsnap ${keyfile_path:+--keyfile "$keyfile_path" }--list-archives -v"
   echo "Listing all local machine archives with '${list_archives_cmd}'..."
   eval "${list_archives_cmd}"
   exit_code="${?}"
@@ -176,7 +176,7 @@ do_manual_backup() {
   #   quit_err_msg_with_help "missing 'archive-name' option" 1
   # fi
   ts_backup_paths=$(echo "${backup_paths}" | tr "," " ")
-  manual_backup_cmd="tarsnap -cvf ${keyfile_path:+--keyfile "$keyfile_path"} ${ts_backup_paths}"
+  manual_backup_cmd="tarsnap -cvf ${keyfile_path:+--keyfile "$keyfile_path" }${ts_backup_paths}"
   echo "Backing up specified paths to an archive on tarsnap.com with '${manual_backup_cmd}'..."
   # eval "${manual_backup_cmd}"
   # exit_code="${?}"
