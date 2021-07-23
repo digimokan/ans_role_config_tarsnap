@@ -4,7 +4,7 @@ default_machine_key_path: '/etc/tarsnap/tarsnap.key'
 # enable automatic backups, from the host, to the remote Tarsnap storage account
 enable_automatic_backups: false
 
-# if automatic backups enabled, backup this directory list to Tarsnap
+# for automatic backups, backup each dir in this list to a tarsnap.com archive
 automatic_backup_dirs:
   - '/home/user2/Documents/'
   - '/home/user2/Templates/'

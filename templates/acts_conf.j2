@@ -2,7 +2,7 @@
 # ANSIBLE-MANAGED CONFIGURATION FILE
 # defaults taken from /etc/acts.conf.sample
 
-# directories to back up to an archive on tarsnap.com, when acts runs
+# directories to back up to tarsnap.com (each to separate archive)
 # NOTE: relative to root dir, no leading or trailing '/'
 backuptargets={{ '"' }}{{ automatic_backup_dirs | map('regex_replace', '^\\/|\\/$', '') | list | join(' ') }}{{ '"' }}
 
