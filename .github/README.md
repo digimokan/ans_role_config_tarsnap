@@ -13,6 +13,7 @@ Install the Tarsnap backup program, and configure backups.
 * [Quick Start](#quick-start)
     * [Use From Playbook](#use-from-playbook)
 * [Role Options](#role-options)
+* [Role Dependencies](#role-dependencies)
 * [Contributing](#contributing)
 
 ## Purpose
@@ -81,6 +82,11 @@ Define these _required_ vars for the role:
   * `user_name`: login account name, on the host machine
   * `tarsnap_user_id`: email address (tarsnap.com account id), can associate to multiple machines
   * `tarsnap_machine_label`: label for this machine, associated with machine key (an alphanumeric string)
+
+## Role Dependencies
+
+* [ans_role_config_cron](https://github.com/digimokan/ans_role_config_cron)
+* [ans_role_config_unofficial_packages](https://github.com/digimokan/ans_role_config_unofficial_packages)
 
 ## Contributing
 
