@@ -145,11 +145,6 @@ print_err_msg() {
   printf "$(basename "${0}"): %s\\n\\n" "${1}"
 }
 
-quit_err_msg() {
-  print_err_msg "${1}"
-  exit "${2}"
-}
-
 quit_err_msg_with_help() {
   print_err_msg "${1}"
   print_usage "${2}"
@@ -161,7 +156,7 @@ do_list_all_machine_archives() {
   eval "${list_archives_cmd}"
   exit_code="${?}"
   if [ "${exit_code}" != 0 ]; then
-    quit_err_msg "tarsnap error attempting to list all archives" 5
+    quit_err_msg_with_help "tarsnap error attempting to list all archives" 5
   fi
 }
 
@@ -178,7 +173,7 @@ do_manual_backup() {
   # eval "${manual_backup_cmd}"
   # exit_code="${?}"
   # if [ "${exit_code}" != 0 ]; then
-  #   quit_err_msg "tarsnap error attempting to do manual backup" 5
+  #   quit_err_msg_with_help "tarsnap error attempting to do manual backup" 5
   # fi
 }
 
@@ -189,7 +184,7 @@ main() {
   elif [ "${manual_backup}" = 'true' ]; then
     do_manual_backup "$@"
   else
-    quit_err_msg "no valid option selected" 1
+    quit_err_msg_with_help "no valid option selected" 1
   fi
   exit 0
 }
