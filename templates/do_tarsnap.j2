@@ -66,10 +66,11 @@ print_usage() {
 }
 
 get_cmd_opts() {
-  while getopts ':hlbda:p:nk:-:' option; do
+  while getopts ':hlsbda:p:nk:-:' option; do
     case "${option}" in
       h)  handle_help ;;
       l)  handle_list_all_archives ;;
+      s)  handle_show_details_all_archives ;;
       b)  handle_manual_backup ;;
       d)  handle_delete_archive ;;
       a)  handle_archive_name "${OPTARG}" ;;
@@ -82,6 +83,8 @@ get_cmd_opts() {
             help=*)                      handle_illegal_option_arg "${OPTARG}" ;;
             list-all-archives)           handle_list_all_archives ;;
             list-all-archives=*)         handle_illegal_option_arg "${OPTARG}" ;;
+            show-details-all-archives)   handle_show_details_all_archives ;;
+            show-details-all-archives=*) handle_illegal_option_arg "${OPTARG}" ;;
             manual-backup)               handle_manual_backup ;;
             manual-backup=*)             handle_illegal_option_arg "${OPTARG}" ;;
             delete-archive)              handle_delete_archive ;;
@@ -116,6 +119,18 @@ handle_list_all_archives() {
     quit_err_msg_with_help "mutually exclusive options selected" 1
   fi
   list_all_archives='true'
+}
+
+handle_show_details_all_archives() {
+  if [ "${list_all_archives}" = 'true' ] || \
+     [ "${show_single_archive}" = 'true' ] || \
+     [ "${auto_backup}" = 'true' ] || \
+     [ "${manual_backup}" = 'true' ] || \
+     [ "${restore_archive}" = 'true' ] || \
+     [ "${delete_archive}" = 'true' ]; then
+    quit_err_msg_with_help "mutually exclusive options selected" 1
+  fi
+  show_all_archives='true'
 }
 
 handle_manual_backup() {
@@ -189,11 +204,21 @@ quit_err_msg_with_help() {
 
 do_list_all_machine_archives() {
   list_archives_cmd="tarsnap ${keyfile_path:+--keyfile "$keyfile_path" }--list-archives -v"
-  echo "Listing all local machine archives with '${list_archives_cmd}'..."
+  echo "Listing all machine archives with '${list_archives_cmd}'..."
   eval "${list_archives_cmd}"
   exit_code="${?}"
   if [ "${exit_code}" != 0 ]; then
     quit_err_msg_with_help "tarsnap error attempting to list all archives" 5
+  fi
+}
+
+do_show_details_all_archives() {
+  show_all_archives_cmd="tarsnap ${keyfile_path:+--keyfile "$keyfile_path" }--print-stats -vf '*'"
+  echo "Showing details for all machine archives with '${show_all_archives_cmd}'..."
+  eval "${show_all_archives_cmd}"
+  exit_code="${?}"
+  if [ "${exit_code}" != 0 ]; then
+    quit_err_msg_with_help "tarsnap error attempting to show details for all archives" 5
   fi
 }
 
@@ -231,6 +256,8 @@ main() {
   get_cmd_opts "$@"
   if [ "${list_all_archives}" = 'true' ]; then
     do_list_all_machine_archives "$@"
+  elif [ "${show_all_archives}" = 'true' ]; then
+    do_show_details_all_archives "$@"
   elif [ "${manual_backup}" = 'true' ]; then
     do_manual_backup "$@"
   elif [ "${delete_archive}" = 'true' ]; then
