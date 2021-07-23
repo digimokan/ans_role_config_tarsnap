@@ -4,7 +4,7 @@
 
 # directories to back up to an archive on tarsnap.com, when acts runs
 # NOTE: relative to root dir, no leading or trailing '/'
-backuptargets={{ automatic_backup_dirs | map('regex_replace', '^\\/|\\/$', '') | list | join(' ') }}
+backuptargets={{ '"' }}{{ automatic_backup_dirs | map('regex_replace', '^\\/|\\/$', '') | list | join(' ') }}{{ '"' }}
 
 # verbosity of acts output (-1 silent, 0 normal, 1 verbose, 2 debug)
 verbose=1
