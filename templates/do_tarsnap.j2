@@ -66,11 +66,12 @@ print_usage() {
 }
 
 get_cmd_opts() {
-  while getopts ':hlsbda:p:nk:-:' option; do
+  while getopts ':hlsSbda:p:nk:-:' option; do
     case "${option}" in
       h)  handle_help ;;
       l)  handle_list_all_archives ;;
       s)  handle_show_details_all_archives ;;
+      S)  handle_show_details_single_archive ;;
       b)  handle_manual_backup ;;
       d)  handle_delete_archive ;;
       a)  handle_archive_name "${OPTARG}" ;;
@@ -79,26 +80,28 @@ get_cmd_opts() {
       k)  handle_machine_keyfile_path "${OPTARG}" ;;
       -)  LONG_OPTARG="${OPTARG#*=}"
           case ${OPTARG} in
-            help)                        handle_help ;;
-            help=*)                      handle_illegal_option_arg "${OPTARG}" ;;
-            list-all-archives)           handle_list_all_archives ;;
-            list-all-archives=*)         handle_illegal_option_arg "${OPTARG}" ;;
-            show-details-all-archives)   handle_show_details_all_archives ;;
-            show-details-all-archives=*) handle_illegal_option_arg "${OPTARG}" ;;
-            manual-backup)               handle_manual_backup ;;
-            manual-backup=*)             handle_illegal_option_arg "${OPTARG}" ;;
-            delete-archive)              handle_delete_archive ;;
-            delete-archive=*)            handle_illegal_option_arg "${OPTARG}" ;;
-            archive-name=?*)             handle_archive_name "${LONG_OPTARG}" ;;
-            archive-name*)               handle_missing_option_arg "${OPTARG}" ;;
-            backup-paths=?*)             handle_backup_paths "${LONG_OPTARG}" ;;
-            backup-paths*)               handle_missing_option_arg "${OPTARG}" ;;
-            dry-run)                     handle_dry_run ;;
-            dry-run=*)                   handle_illegal_option_arg "${OPTARG}" ;;
-            machine-keyfile-path=?*)     handle_machine_keyfile_path "${LONG_OPTARG}" ;;
-            machine-keyfile-path*)       handle_missing_option_arg "${OPTARG}" ;;
-            '')                          break ;; # non-option arg starting with '-'
-            *)                           handle_unknown_option "${OPTARG}" ;;
+            help)                          handle_help ;;
+            help=*)                        handle_illegal_option_arg "${OPTARG}" ;;
+            list-all-archives)             handle_list_all_archives ;;
+            list-all-archives=*)           handle_illegal_option_arg "${OPTARG}" ;;
+            show-details-all-archives)     handle_show_details_all_archives ;;
+            show-details-all-archives=*)   handle_illegal_option_arg "${OPTARG}" ;;
+            show-details-single-archive)   handle_show_details_single_archive ;;
+            show-details-single-archive=*) handle_illegal_option_arg "${OPTARG}" ;;
+            manual-backup)                 handle_manual_backup ;;
+            manual-backup=*)               handle_illegal_option_arg "${OPTARG}" ;;
+            delete-archive)                handle_delete_archive ;;
+            delete-archive=*)              handle_illegal_option_arg "${OPTARG}" ;;
+            archive-name=?*)               handle_archive_name "${LONG_OPTARG}" ;;
+            archive-name*)                 handle_missing_option_arg "${OPTARG}" ;;
+            backup-paths=?*)               handle_backup_paths "${LONG_OPTARG}" ;;
+            backup-paths*)                 handle_missing_option_arg "${OPTARG}" ;;
+            dry-run)                       handle_dry_run ;;
+            dry-run=*)                     handle_illegal_option_arg "${OPTARG}" ;;
+            machine-keyfile-path=?*)       handle_machine_keyfile_path "${LONG_OPTARG}" ;;
+            machine-keyfile-path*)         handle_missing_option_arg "${OPTARG}" ;;
+            '')                            break ;; # non-option arg starting with '-'
+            *)                             handle_unknown_option "${OPTARG}" ;;
           esac ;;
       \?) handle_unknown_option "${OPTARG}" ;;
     esac
@@ -131,6 +134,18 @@ handle_show_details_all_archives() {
     quit_err_msg_with_help "mutually exclusive options selected" 1
   fi
   show_all_archives='true'
+}
+
+handle_show_details_single_archive() {
+  if [ "${list_all_archives}" = 'true' ] || \
+     [ "${show_all_archives}" = 'true' ] || \
+     [ "${auto_backup}" = 'true' ] || \
+     [ "${manual_backup}" = 'true' ] || \
+     [ "${restore_archive}" = 'true' ] || \
+     [ "${delete_archive}" = 'true' ]; then
+    quit_err_msg_with_help "mutually exclusive options selected" 1
+  fi
+  show_single_archive='true'
 }
 
 handle_manual_backup() {
@@ -222,6 +237,19 @@ do_show_details_all_archives() {
   fi
 }
 
+do_show_details_single_archive() {
+  if [ "${archive_name}" = '' ]; then
+    quit_err_msg_with_help "missing 'archive-name' option" 1
+  fi
+  show_single_archive_cmd="tarsnap ${keyfile_path:+--keyfile "$keyfile_path" }--print-stats -vf ${archive_name}"
+  echo "Showing details for single machine archive with '${show_single_archive_cmd}'..."
+  eval "${show_single_archive_cmd}"
+  exit_code="${?}"
+  if [ "${exit_code}" != 0 ]; then
+    quit_err_msg_with_help "tarsnap error attempting to show details for single archive" 5
+  fi
+}
+
 do_manual_backup() {
   if [ "${backup_paths}" = '' ]; then
     quit_err_msg_with_help "missing 'backup-paths' option" 1
@@ -258,6 +286,8 @@ main() {
     do_list_all_machine_archives "$@"
   elif [ "${show_all_archives}" = 'true' ]; then
     do_show_details_all_archives "$@"
+  elif [ "${show_single_archive}" = 'true' ]; then
+    do_show_details_single_archive "$@"
   elif [ "${manual_backup}" = 'true' ]; then
     do_manual_backup "$@"
   elif [ "${delete_archive}" = 'true' ]; then
