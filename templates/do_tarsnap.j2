@@ -185,11 +185,11 @@ do_manual_backup() {
   ts_backup_paths=$(echo "${backup_paths}" | tr "," " ")
   manual_backup_cmd="tarsnap -cvf ${keyfile_path:+--keyfile "$keyfile_path" }${archive_name} ${ts_backup_paths}"
   echo "Backing up specified paths to an archive on tarsnap.com with '${manual_backup_cmd}'..."
-  # eval "${manual_backup_cmd}"
-  # exit_code="${?}"
-  # if [ "${exit_code}" != 0 ]; then
-  #   quit_err_msg_with_help "tarsnap error attempting to do manual backup" 5
-  # fi
+  eval "${manual_backup_cmd}"
+  exit_code="${?}"
+  if [ "${exit_code}" != 0 ]; then
+    quit_err_msg_with_help "tarsnap error attempting to do manual backup" 5
+  fi
 }
 
 main() {
