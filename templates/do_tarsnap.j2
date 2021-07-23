@@ -30,8 +30,8 @@ print_usage() {
   echo "  $(basename "${0}")  -S  -a <archive_name>  [-k <keyfile_path>]"
   echo "  $(basename "${0}")  -b  -p <backup_paths>  -a <archive_name>  [-n]  [-k <keyfile_path>]"
   echo "  $(basename "${0}")  -t"
-  echo "  $(basename "${0}")  -x  -a <archive_name>  [-n]  [-k <keyfile_path>]"
-  echo "  $(basename "${0}")  -d  -a <archive_name>  [-n]  [-k <keyfile_path>]"
+  echo "  $(basename "${0}")  -x  -a <archive_name>  [-k <keyfile_path>]"
+  echo "  $(basename "${0}")  -d  -a <archive_name>  [-k <keyfile_path>]"
   echo 'OPTIONS:'
   echo '  -h, --help'
   echo '      print this help message'
@@ -54,7 +54,7 @@ print_usage() {
   echo '  -p <backup_paths>, --backup-paths=<backup_paths>'
   echo "      comma-separated list of dirs (absolute paths, with trailing '/')"
   echo '  -n, --dry-run'
-  echo "      do a 'dry-run' of the selected backup, extract, or delete operation"
+  echo "      do a 'dry-run' of the backup operation"
   echo '  -k <keyfile_path>, --machine-keyfile-path=<keyfile_path>'
   echo "      specify machine keyfile path (default: local machine '{{ default_machine_key_path }}')"
   echo 'EXIT CODES:'
@@ -66,11 +66,12 @@ print_usage() {
 }
 
 get_cmd_opts() {
-  while getopts ':hlba:p:nk:-:' option; do
+  while getopts ':hlbda:p:nk:-:' option; do
     case "${option}" in
       h)  handle_help ;;
       l)  handle_list_all_archives ;;
       b)  handle_manual_backup ;;
+      d)  handle_delete_archive ;;
       a)  handle_archive_name "${OPTARG}" ;;
       p)  handle_backup_paths "${OPTARG}" ;;
       n)  handle_dry_run ;;
@@ -83,6 +84,8 @@ get_cmd_opts() {
             list-all-archives=*)         handle_illegal_option_arg "${OPTARG}" ;;
             manual-backup)               handle_manual_backup ;;
             manual-backup=*)             handle_illegal_option_arg "${OPTARG}" ;;
+            delete-archive)              handle_delete_archive ;;
+            delete-archive=*)            handle_illegal_option_arg "${OPTARG}" ;;
             archive-name=?*)             handle_archive_name "${LONG_OPTARG}" ;;
             archive-name*)               handle_missing_option_arg "${OPTARG}" ;;
             backup-paths=?*)             handle_backup_paths "${LONG_OPTARG}" ;;
@@ -125,6 +128,18 @@ handle_manual_backup() {
     quit_err_msg_with_help "mutually exclusive options selected" 1
   fi
   manual_backup='true'
+}
+
+handle_delete_archive() {
+  if [ "${list_all_archives}" = 'true' ] || \
+     [ "${show_all_archives}" = 'true' ] || \
+     [ "${show_single_archive}" = 'true' ] || \
+     [ "${auto_backup}" = 'true' ] || \
+     [ "${manual_backup}" = 'true' ] || \
+     [ "${restore_archive}" = 'true' ]; then
+    quit_err_msg_with_help "mutually exclusive options selected" 1
+  fi
+  delete_archive='true'
 }
 
 handle_archive_name() {
@@ -199,12 +214,27 @@ do_manual_backup() {
   fi
 }
 
+do_delete_archive() {
+  if [ "${archive_name}" = '' ]; then
+    quit_err_msg_with_help "missing 'archive-name' option" 1
+  fi
+  delete_archive_cmd="tarsnap -dvf ${keyfile_path:+--keyfile "$keyfile_path" }${archive_name}"
+  echo "Deleting specified archive on tarsnap.com with '${delete_archive_cmd}'..."
+  eval "${delete_archive_cmd}"
+  exit_code="${?}"
+  if [ "${exit_code}" != 0 ]; then
+    quit_err_msg_with_help "tarsnap error attempting to delete archive" 5
+  fi
+}
+
 main() {
   get_cmd_opts "$@"
   if [ "${list_all_archives}" = 'true' ]; then
     do_list_all_machine_archives "$@"
   elif [ "${manual_backup}" = 'true' ]; then
     do_manual_backup "$@"
+  elif [ "${delete_archive}" = 'true' ]; then
+    do_delete_archive "$@"
   else
     quit_err_msg_with_help "no valid option selected" 1
   fi
