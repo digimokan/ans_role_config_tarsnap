@@ -66,11 +66,12 @@ print_usage() {
 }
 
 get_cmd_opts() {
-  while getopts ':hlba:k:-:' option; do
+  while getopts ':hlbp:k:-:' option; do
     case "${option}" in
       h)  handle_help ;;
       l)  handle_list_all_archives ;;
       b)  handle_manual_backup ;;
+      p)  handle_backup_paths "${OPTARG}" ;;
       k)  handle_machine_keyfile_path "${OPTARG}" ;;
       -)  LONG_OPTARG="${OPTARG#*=}"
           case ${OPTARG} in
@@ -80,6 +81,8 @@ get_cmd_opts() {
             list-all-archives=*)         handle_illegal_option_arg "${OPTARG}" ;;
             manual-backup)               handle_manual_backup ;;
             manual-backup=*)             handle_illegal_option_arg "${OPTARG}" ;;
+            backup-paths=?*)             handle_backup_paths "${LONG_OPTARG}" ;;
+            backup-paths*)               handle_missing_option_arg "${OPTARG}" ;;
             machine-keyfile-path=?*)     handle_machine_keyfile_path "${LONG_OPTARG}" ;;
             machine-keyfile-path*)       handle_missing_option_arg "${OPTARG}" ;;
             '')                          break ;; # non-option arg starting with '-'
@@ -116,6 +119,11 @@ handle_manual_backup() {
     quit_err_msg_with_help "mutually exclusive options selected" 1
   fi
   manual_backup='true'
+}
+
+handle_backup_paths() {
+  paths_with_commas="${1}"
+  backup_paths=$(echo "${paths_with_commas}" | tr "," " ")
 }
 
 handle_machine_keyfile_path() {
