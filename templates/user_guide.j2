@@ -1,0 +1,49 @@
+# OVERVIEW
+
+This machine is configured to encrypt and back up your local files,
+automatically, to tarsnap.com.
+
+# TARSNAP ACCOUNT INFORMATION
+
+* Your tarsnap.com account is pre-loaded with funds.
+* tarsnap.com charges the account for backup jobs, and also charges the account
+  for daily storage (based on the number/size of files backed up).
+* Your tarsnap.com user account name is {{ tarsnap_user_id }}.
+* Your tarsnap.com machine label, used to uniquely identify backups created by
+  this machine, is {{ tarsnap_machine_label }}.
+* You should already know your tarsnap.com account password.
+* Periodically, log in here with your account name and account password, and
+  check and add funds as necessary: https://www.tarsnap.com/account.html
+
+# TARSNAP ENCRYPTION KEY
+
+* An encyption key is stored on this machine, which encrypts files before they
+  are sent to tarsnap.com. The key itself is just a long string of letters,
+  digits, and special characters.
+* The encryption key is also used to fetch and decrypt backed-up-files from
+  tarsnap.com. Therefore, if you lose the encryption key, the backups stored on
+  tarsnap.com are worthless.
+* The encryption key file is located at {{ default_machine_key_path }}.
+* __IMPORTANT__: back up this keyfile to a USB stick, and store the stick
+  offsite. Also, print the keyfile to a piece of paper, laminate it, and store
+  that offsite as well.
+
+# AUTOMATIC BACKUPS
+
+* All your files in the the following director(y/ies) will be backed up:
+  {{ automatic_backup_dirs }}
+* The backup will be run automatically every day, at the following hour (0 is
+  midnight, 3 is 0300, 15 is 1500, etc): {{ daily_automatic_backup_hour }}.
+* This machine must be powered on in order for the automatic backup job to run.
+
+# CHECKING BACKUPS
+
+* Periodically, launch the Terminal application, and run this command at the
+  command prompt: do_tarsnap -l
+* The command output will show all backups stored on tarsnap.com. There should
+  be a daily backup for the last 31 days, a monthly backup for the last 12
+  months, and a yearly backup for each year.
+
+[//]: # vim: set filetype=markdown:
+[//]: # ANSIBLE-MANAGED FILE
+

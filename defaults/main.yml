@@ -10,6 +10,10 @@ automatic_backup_dirs:
 # NOTE: '0' for midnight, '3' for 3 am, '15' for 3 pm, etc
 daily_automatic_backup_hour: '3'
 
+# if this var is not empty, create a Tarsnap "user guide" in this directory
+# NOTE: specify full dir path from root, with leading and trailing '/'
+tarsnap_user_guide_dir: ''
+
 # default path to local machine key used by the tarsnap program
 default_machine_key_path: '/etc/tarsnap/tarsnap.key'
 

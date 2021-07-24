@@ -1,0 +1,13 @@
+- name: "Create Tarsnap user guide at {{ user_guide_path }}"
+  ansible.builtin.template:
+    dest: "{{ user_guide_path }}"
+    src: "user_guide.j2"
+    owner: 'root'
+    group: 'root'
+    mode: '666'
+    force: yes
+  vars:
+    user_guide_path: "{{ tarsnap_user_guide_dir }}tarsnap_user_guide.md"
+  become: true
+  become_user: root
+
