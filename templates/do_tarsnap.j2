@@ -298,8 +298,8 @@ do_manual_backup() {
 }
 
 do_auto_backup() {
-  auto_backup_cmd="acts"
-  if command -v "${auto_backup_cmd}"; then
+  auto_backup_cmd='acts'
+  if ! [ -x "$(command -v "${auto_backup_cmd}")" ]; then
     quit_err_msg_with_help "auto-backup program ${auto_backup_cmd} does not exist" 1
   fi
   echo "Running auto-backup of /etc/acts.conf dirs to archive(s) on tarsnap.com with '${auto_backup_cmd}'..."
