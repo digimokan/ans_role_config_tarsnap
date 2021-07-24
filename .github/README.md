@@ -19,7 +19,7 @@ Install the Tarsnap backup program, and configure backups.
 ## Purpose
 
 * Install the [Tarsnap](https://www.tarsnap.com/) backup program.
-* Simplify Tarsnap usage by providing a utility script.
+* Simplify Tarsnap usage by providing a [utility script](../templates/do_tarsnap.j2).
 * Optionally configure automatic periodic backups.
 
 ## Requirements
