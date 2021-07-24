@@ -9,9 +9,9 @@
   vars:
     package_name: "acts-git"
 
-- name: "Configure 'acts' script settings, and backup paths, in '/etc/acts.conf'"
+- name: "Configure 'acts' script settings, and backup paths, in {{ default_acts_config_file_path }}"
   ansible.builtin.template:
-    dest: '/etc/acts.conf'
+    dest: "{{ default_acts_config_file_path }}"
     src: "acts_conf.j2"
     owner: 'root'
     group: 'root'
@@ -26,7 +26,7 @@
     hour: "{{ daily_automatic_backup_hour }}"
     minute: '0'
     user: 'root'
-    job: '/usr/bin/acts'
+    job: "{{ default_acts_program_path }}"
   become: true
   become_user: root
 

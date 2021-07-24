@@ -1,6 +1,3 @@
-# default path to local machine key used by the tarsnap program
-default_machine_key_path: '/etc/tarsnap/tarsnap.key'
-
 # enable automatic backups, from the host, to the remote Tarsnap storage account
 enable_automatic_backups: false
 
@@ -12,4 +9,13 @@ automatic_backup_dirs:
 # for automatic backups, run the daily backup at this hour
 # NOTE: '0' for midnight, '3' for 3 am, '15' for 3 pm, etc
 daily_automatic_backup_hour: '3'
+
+# default path to local machine key used by the tarsnap program
+default_machine_key_path: '/etc/tarsnap/tarsnap.key'
+
+# default path to acts config file
+default_acts_config_file_path: '/etc/acts.conf'
+
+# default path to acts executable program
+default_acts_program_path: '/usr/bin/acts'
 

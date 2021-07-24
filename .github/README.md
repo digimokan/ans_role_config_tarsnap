@@ -66,9 +66,11 @@ Install the Tarsnap backup program, and configure backups.
          ansible.builtin.include_role:
            name: ans_role_config_tarsnap
          vars:
-           user_name: "user2"
            tarsnap_user_id: "somebody@gmail.com"
            tarsnap_machine_label: "user2_dell_desktop"
+           enable_automatic_backups: true
+           automatic_backup_dirs:
+             - '/home/user2/Documents/'
    ```
 
 ## Role Options
@@ -79,7 +81,6 @@ See the role `defaults` file, for overridable vars:
 
 Define these _required_ vars for the role:
 
-  * `user_name`: login account name, on the host machine
   * `tarsnap_user_id`: email address (tarsnap.com account id), can associate to multiple machines
   * `tarsnap_machine_label`: label for this machine, associated with machine key (an alphanumeric string)
 

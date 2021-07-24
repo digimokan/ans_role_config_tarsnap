@@ -10,7 +10,7 @@ backuptargets={{ '"' }}{{ automatic_backup_dirs | map('regex_replace', '^\\/|\\/
 verbose=1
 
 # prefix this string to a created archive
-hostname=$(uname -n)
+hostname={{ tarsnap_machine_label }}
 
 # append UTC (0) timestamp, or local-time (1) timestamp, to a created archive
 uselocaltime=0

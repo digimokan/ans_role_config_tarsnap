@@ -44,7 +44,7 @@ print_usage() {
   echo '  -b, --manual-backup'
   echo '      back up specified backup paths to an archive on tarsnap.com'
   echo '  -t, --auto-backup'
-  echo '      do auto/periodic backup of dir(s) listed in /etc/acts.conf to archive(s) on tarsnap.com'
+  echo '      do auto/periodic backup of dir(s) listed in {{ default_acts_config_file_path }} to archive(s) on tarsnap.com'
   echo '  -x, --fetch-and-extract-archive'
   echo '      fetch specified archive from tarsnap.com and extract to working dir'
   echo '  -d, --delete-archive'
@@ -298,11 +298,11 @@ do_manual_backup() {
 }
 
 do_auto_backup() {
-  auto_backup_cmd='acts'
+  auto_backup_cmd='{{ default_acts_program_path }}'
   if ! [ -x "$(command -v "${auto_backup_cmd}")" ]; then
     quit_err_msg_with_help "auto-backup program ${auto_backup_cmd} does not exist" 1
   fi
-  echo "Running auto-backup of /etc/acts.conf dirs to archive(s) on tarsnap.com with '${auto_backup_cmd}'..."
+  echo "Running auto-backup of {{ default_acts_config_file_path }} dirs to archive(s) on tarsnap.com with '${auto_backup_cmd}'..."
   eval "${auto_backup_cmd}"
   exit_code="${?}"
   if [ "${exit_code}" != 0 ]; then
