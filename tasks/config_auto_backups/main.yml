@@ -20,3 +20,13 @@
   become: true
   become_user: root
 
+- name: "Configure cron to run 'acts' daily, at the hour of {{ daily_automatic_backup_hour }}"
+  ansible.builtin.cron:
+    name: 'tarsnap acts auto-backup'
+    hour: "{{ daily_automatic_backup_hour }}"
+    minute: '0'
+    user: 'root'
+    job: '/usr/bin/acts'
+  become: true
+  become_user: root
+
