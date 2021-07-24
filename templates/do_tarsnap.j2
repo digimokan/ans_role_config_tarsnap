@@ -44,7 +44,7 @@ print_usage() {
   echo '  -b, --manual-backup'
   echo '      back up specified backup paths to an archive on tarsnap.com'
   echo '  -t, --auto-backup'
-  echo '      do auto/periodic backup of dirs listed in XXXXXXXXXXXXXXXXXXXXX to an archive'
+  echo '      do auto/periodic backup of dir(s) listed in /etc/acts.conf to archive(s) on tarsnap.com'
   echo '  -x, --fetch-and-extract-archive'
   echo '      fetch specified archive from tarsnap.com and extract to working dir'
   echo '  -d, --delete-archive'
@@ -66,13 +66,14 @@ print_usage() {
 }
 
 get_cmd_opts() {
-  while getopts ':hlsSbxda:p:nk:-:' option; do
+  while getopts ':hlsSbtxda:p:nk:-:' option; do
     case "${option}" in
       h)  handle_help ;;
       l)  handle_list_all_archives ;;
       s)  handle_show_details_all_archives ;;
       S)  handle_show_details_single_archive ;;
       b)  handle_manual_backup ;;
+      t)  handle_auto_backup ;;
       x)  handle_fetch_and_extract_archive ;;
       d)  handle_delete_archive ;;
       a)  handle_archive_name "${OPTARG}" ;;
@@ -91,6 +92,8 @@ get_cmd_opts() {
             show-details-single-archive=*) handle_illegal_option_arg "${OPTARG}" ;;
             manual-backup)                 handle_manual_backup ;;
             manual-backup=*)               handle_illegal_option_arg "${OPTARG}" ;;
+            auto-backup)                   handle_auto_backup ;;
+            auto-backup=*)                 handle_illegal_option_arg "${OPTARG}" ;;
             fetch-and-extract-archive)     handle_fetch_and_extract_archive ;;
             fetch-and-extract-archive=*)   handle_illegal_option_arg "${OPTARG}" ;;
             delete-archive)                handle_delete_archive ;;
@@ -161,6 +164,18 @@ handle_manual_backup() {
     quit_err_msg_with_help "mutually exclusive options selected" 1
   fi
   manual_backup='true'
+}
+
+handle_auto_backup() {
+  if [ "${list_all_archives}" = 'true' ] || \
+     [ "${show_all_archives}" = 'true' ] || \
+     [ "${show_single_archive}" = 'true' ] || \
+     [ "${manual_backup}" = 'true' ] || \
+     [ "${extract_archive}" = 'true' ] || \
+     [ "${delete_archive}" = 'true' ]; then
+    quit_err_msg_with_help "mutually exclusive options selected" 1
+  fi
+  auto_backup='true'
 }
 
 handle_fetch_and_extract_archive() {
@@ -282,6 +297,19 @@ do_manual_backup() {
   fi
 }
 
+do_auto_backup() {
+  auto_backup_cmd="acts"
+  if command -v "${auto_backup_cmd}"; then
+    quit_err_msg_with_help "auto-backup program ${auto_backup_cmd} does not exist" 1
+  fi
+  echo "Running auto-backup of /etc/acts.conf dirs to archive(s) on tarsnap.com with '${auto_backup_cmd}'..."
+  eval "${auto_backup_cmd}"
+  exit_code="${?}"
+  if [ "${exit_code}" != 0 ]; then
+    quit_err_msg_with_help "tarsnap error attempting to do auto backup" 5
+  fi
+}
+
 do_extract_archive() {
   if [ "${archive_name}" = '' ]; then
     quit_err_msg_with_help "missing 'archive-name' option" 1
@@ -318,6 +346,8 @@ main() {
     do_show_details_single_archive "$@"
   elif [ "${manual_backup}" = 'true' ]; then
     do_manual_backup "$@"
+  elif [ "${auto_backup}" = 'true' ]; then
+    do_auto_backup "$@"
   elif [ "${extract_archive}" = 'true' ]; then
     do_extract_archive "$@"
   elif [ "${delete_archive}" = 'true' ]; then
