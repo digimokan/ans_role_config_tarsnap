@@ -10,6 +10,10 @@
 - name: "Create new local machine key for Tarsnap user '{{ tarsnap_user_id }}', as required"
   ansible.builtin.include_tasks: create_machine_key/main.yml
 
+- name: "Install automatic backup utilities"
+  ansible.builtin.include_tasks: install_auto_backup_utils/main.yml
+  when: enable_automatic_backups
+
 - name: "Configure automatic backups"
   ansible.builtin.include_tasks: config_auto_backups/main.yml
   when: enable_automatic_backups

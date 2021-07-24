@@ -1,0 +1,8 @@
+- name: "Install and configure cron daemon dependency"
+  ansible.builtin.include_role:
+    name: ext/ans_role_config_cron
+
+- name: "Install 'acts' automatic backup utility for Arch Linux"
+  ansible.builtin.include_tasks: archlinux/main.yml
+  when: ansible_os_family == "Archlinux"
+

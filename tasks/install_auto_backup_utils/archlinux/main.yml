@@ -1,0 +1,7 @@
+- name: "Install 'acts' tarsnap auto-backup script"
+  ansible.builtin.include_role:
+    name: ans_role_config_unofficial_packages
+    tasks_from: inc/add_package.yml
+  vars:
+    package_name: "acts-git"
+
