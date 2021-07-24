@@ -9,7 +9,7 @@
 
 - name: "Create Tarsnap user guide"
   ansible.builtin.include_tasks: create_user_guide/main.yml
-  when: (tarsnap_user_guide_path)
+  when: (tarsnap_user_guide_dir)
 
 - name: "Create new local machine key for Tarsnap user '{{ tarsnap_user_id }}', as required"
   ansible.builtin.include_tasks: create_machine_key/main.yml
