@@ -1,9 +1,8 @@
-- name: "Configure default Tarsnap app settings in '/etc/tarsnap/tarsnap.conf'"
+- name: "Configure default Tarsnap app settings in '{{ default_tarsnap_config_file_path }}'"
   ansible.builtin.template:
-    dest: '/etc/tarsnap/tarsnap.conf'
+    dest: "{{ default_tarsnap_config_file_path }}"
     src: "tarsnap_conf.j2"
     owner: 'root'
-    group: 'root'
     mode: '644'
     force: yes
   become: true

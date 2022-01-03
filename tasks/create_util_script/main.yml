@@ -3,7 +3,6 @@
     dest: "/usr/local/bin/do_tarsnap.sh"
     src: "do_tarsnap.j2"
     owner: 'root'
-    group: 'root'
     mode: '755'
     force: yes
   become: true

@@ -1,6 +1,6 @@
-- name: "Install the 'tarsnap' application package"
+- name: "Install the 'acts' application package"
   ansible.builtin.package:
-    name: tarsnap
+    name: acts
     state: present
   become: true
   become_user: root

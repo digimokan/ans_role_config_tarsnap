@@ -11,15 +11,6 @@ automatic_backup_dirs:
 daily_automatic_backup_hour: '3'
 
 # if this var is not empty, create a Tarsnap "user guide" in this directory
-# NOTE: specify full dir path from root, with leading and trailing '/'
+# NOTE: specify absolute path from root, with leading and trailing '/'
 tarsnap_user_guide_dir: ''
-
-# default path to local machine key used by the tarsnap program
-default_machine_key_path: '/etc/tarsnap/tarsnap.key'
-
-# default path to acts config file
-default_acts_config_file_path: '/etc/acts.conf'
-
-# default path to acts executable program
-default_acts_program_path: '/usr/bin/acts'
 

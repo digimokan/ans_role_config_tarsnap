@@ -1,24 +1,18 @@
-- name: "Install Tarsnap application"
-  ansible.builtin.include_tasks: install_app/main.yml
+- name: "Run all role tasks for Linux"
+  ansible.builtin.include_tasks: run_all_tasks.yml
+  vars:
+    default_tarsnap_config_file_path: "{{ linux_tarsnap_config_file_path }}"
+    default_machine_key_path: "{{ linux_machine_key_path }}"
+    default_acts_config_file_path: "{{ linux_acts_config_file_path }}"
+    default_acts_program_path: "{{ linux_acts_program_path }}"
+  when: ansible_system == "Linux"
 
-- name: "Configure default Tarsnap application settings"
-  ansible.builtin.include_tasks: config_app_settings/main.yml
-
-- name: "Create Tarsnap utility script"
-  ansible.builtin.include_tasks: create_util_script/main.yml
-
-- name: "Create Tarsnap user guide"
-  ansible.builtin.include_tasks: create_user_guide/main.yml
-  when: (tarsnap_user_guide_dir)
-
-- name: "Create new local machine key for Tarsnap user '{{ tarsnap_user_id }}', as required"
-  ansible.builtin.include_tasks: create_machine_key/main.yml
-
-- name: "Install automatic backup utilities"
-  ansible.builtin.include_tasks: install_auto_backup_utils/main.yml
-  when: enable_automatic_backups
-
-- name: "Configure automatic backups"
-  ansible.builtin.include_tasks: config_auto_backups/main.yml
-  when: enable_automatic_backups
+- name: "Run all role tasks for FreeBSD"
+  ansible.builtin.include_tasks: run_all_tasks.yml
+  vars:
+    default_tarsnap_config_file_path: "{{ freebsd_tarsnap_config_file_path }}"
+    default_machine_key_path: "{{ freebsd_machine_key_path }}"
+    default_acts_config_file_path: "{{ freebsd_acts_config_file_path }}"
+    default_acts_program_path: "{{ freebsd_acts_program_path }}"
+  when: ansible_os_family == "FreeBSD"
 

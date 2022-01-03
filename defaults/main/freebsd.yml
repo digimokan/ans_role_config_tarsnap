@@ -1,0 +1,12 @@
+# default path to tarsnap config file
+freebsd_tarsnap_config_file_path: '/usr/local/etc/tarsnap.conf'
+
+# default path to local machine key used by the tarsnap program
+freebsd_machine_key_path: '/usr/local/etc/tarsnap.key'
+
+# default path to acts config file
+freebsd_acts_config_file_path: '/usr/local/etc/acts.conf'
+
+# default path to acts executable program
+freebsd_acts_program_path: '/usr/local/bin/acts'
+

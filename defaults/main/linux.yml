@@ -1,0 +1,12 @@
+# default path to tarsnap config file
+linux_tarsnap_config_file_path: '/etc/tarsnap/tarsnap.conf'
+
+# default path to local machine key used by the tarsnap program
+linux_machine_key_path: '/etc/tarsnap/tarsnap.key'
+
+# default path to acts config file
+linux_acts_config_file_path: '/etc/acts.conf'
+
+# default path to acts executable program
+linux_acts_program_path: '/usr/bin/acts'
+

@@ -29,12 +29,13 @@ Install the Tarsnap backup program, and configure backups.
   one-time action of creating the local machine key.
 * After the role executes, ensure the created local machine key is backed up to
   a USB stick and printed paper copy.
-* See [`defaults/main.yml`](../defaults/main.yml) for local machine key file
-  path.
+* See [`defaults/main/`](../defaults/main/) for OS-specific local machine key
+  file path.
 
 ## Supported Operating Systems
 
 * Arch Linux.
+* FreeBSD.
 
 ## Quick Start
 
@@ -75,9 +76,9 @@ Install the Tarsnap backup program, and configure backups.
 
 ## Role Options
 
-See the role `defaults` file, for overridable vars:
+See the role `defaults` files, for overridable vars:
 
-  * [defaults/main.yml](../defaults/main.yml)
+  * [defaults/main/](../defaults/main/)
 
 Define these _required_ vars for the role:
 

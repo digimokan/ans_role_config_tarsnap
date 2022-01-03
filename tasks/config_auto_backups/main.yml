@@ -3,7 +3,6 @@
     dest: "{{ default_acts_config_file_path }}"
     src: "acts_conf.j2"
     owner: 'root'
-    group: 'root'
     mode: '644'
     force: yes
   become: true

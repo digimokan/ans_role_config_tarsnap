@@ -3,7 +3,6 @@
     dest: "{{ user_guide_path }}"
     src: "user_guide.j2"
     owner: 'root'
-    group: 'root'
     mode: '666'
     force: yes
   vars:
