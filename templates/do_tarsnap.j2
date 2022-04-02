@@ -314,7 +314,7 @@ do_extract_archive() {
   if [ "${archive_name}" = '' ]; then
     quit_err_msg_with_help "missing 'archive-name' option" 1
   fi
-  extract_archive_cmd="tarsnap -xvf ${keyfile_path:+--keyfile "$keyfile_path" }${archive_name}"
+  extract_archive_cmd="tarsnap ${keyfile_path:+--keyfile "$keyfile_path" }-xvf ${archive_name}"
   echo "Extracting specified archive from tarsnap.com with '${extract_archive_cmd}'..."
   eval "${extract_archive_cmd}"
   exit_code="${?}"
@@ -327,7 +327,7 @@ do_delete_archive() {
   if [ "${archive_name}" = '' ]; then
     quit_err_msg_with_help "missing 'archive-name' option" 1
   fi
-  delete_archive_cmd="tarsnap -dvf ${keyfile_path:+--keyfile "$keyfile_path" }${archive_name}"
+  delete_archive_cmd="tarsnap ${keyfile_path:+--keyfile "$keyfile_path" }-dvf ${archive_name}"
   echo "Deleting specified archive on tarsnap.com with '${delete_archive_cmd}'..."
   eval "${delete_archive_cmd}"
   exit_code="${?}"
