@@ -1,0 +1,7 @@
+- name: "Create Tarsnap cache-dir zfs dataset '{{ dataset_name }}'"
+  community.general.zfs:
+    name: "{{ dataset_name }}"
+    state: present
+  vars:
+    dataset_name: "{{ tarsnap_cache_dir.zpool }}{{ tarsnap_cache_dir.path }}"
+

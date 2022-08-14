@@ -14,3 +14,10 @@ daily_automatic_backup_hour: '3'
 # NOTE: specify absolute path from root, with leading and trailing '/'
 tarsnap_user_guide_dir: ''
 
+# Create and use this cache dir (required for Tarsnap operations)
+# NOTE: ensure this directory does not "roll back" to a previous versioned state
+tarsnap_cache_dir:
+  path: '/var/tarsnap_cache'
+  is_zfs_dataset: true
+  zpool: 'zroot'
+

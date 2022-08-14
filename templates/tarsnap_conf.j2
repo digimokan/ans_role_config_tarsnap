@@ -3,7 +3,7 @@
 # defaults taken from /etc/tarsnap/tarsnap.conf.sample
 
 # Tarsnap cache directory
-cachedir /usr/local/tarsnap-cache
+cachedir {{ tarsnap_cache_dir.path }}
 
 # Tarsnap local-machine key file path
 keyfile {{ default_machine_key_path }}

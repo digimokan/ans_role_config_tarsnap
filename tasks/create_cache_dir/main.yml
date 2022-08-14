@@ -1,0 +1,8 @@
+- name: "Create Tarsnap cache dir as a zfs dataset"
+  ansible.builtin.include_tasks: dataset_cache_dir/main.yml
+  when: tarsnap_cache_dir.is_zfs_dataset
+
+- name: "Create Tarsnap cache dir as a normal filesystem directory"
+  ansible.builtin.include_tasks: fs_cache_dir/main.yml
+  when: not tarsnap_cache_dir.is_zfs_dataset
+

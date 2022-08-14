@@ -1,0 +1,5 @@
+- name: "Create Tarsnap cache directory '{{ tarsnap_cache_dir.path }}'"
+  ansible.builtin.file:
+    path: "{{ tarsnap_cache_dir.path }}"
+    state: directory
+
