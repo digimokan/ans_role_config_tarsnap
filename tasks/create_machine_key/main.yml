@@ -12,7 +12,7 @@
       The tarsnap program will upload the public key component to tarsnap.com.
       Back up this keyfile to a USB stick and paper copy!!
       Enter the tarsnap.com password for tarsnap-user '{{ tarsnap_user_id }}'
-    echo: yes
+    echo: true
   register: tarsnap_user_password
   when: not machine_key_file.stat.exists
 

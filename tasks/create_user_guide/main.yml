@@ -4,7 +4,7 @@
     src: "user_guide.j2"
     owner: 'root'
     mode: '666'
-    force: yes
+    force: true
   vars:
     user_guide_path: "{{ tarsnap_user_guide_dir }}tarsnap_user_guide.md"
   become: true
